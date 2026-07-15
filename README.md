@@ -28,10 +28,18 @@ Translators:
   stroke into `up/down/left/right/tap` and maps those to keys. Params: `tap_dist`,
   `map`.
 - **`keymap`** — device sends real key codes; remap input key → output key.
-  Params: `map` (e.g. `KEY_VOLUMEUP: KEY_UP`).
+  Params: `map` (e.g. `KEY_VOLUMEUP: KEY_UP`, or a gamepad `BTN_EAST: KEY_ENTER`).
+- **`axis`** — device has absolute axes (joystick stick / hat / dpad). Map an
+  axis + direction (`ABS_HAT0Y-`) to a key, fired once when the axis enters that
+  zone. Params: `center`, `threshold` (dead zone; hat uses `0`/`1`, an analog
+  stick `0..255` uses `center: 127, threshold: 64`), `map`.
 
-Add a translator kind (a new event→key algorithm) only for a genuinely novel
-device; it's a small enum arm in `src/profile.rs` + `src/gesture.rs`-style logic.
+A profile may use a single `translator:` or a list of `translators:` (evaluated
+in order, first match wins) — so one device can mix algorithms, e.g. a gamepad's
+stick via `axis` and its buttons via `keymap`.
+
+Add a new translator kind only for a genuinely novel device; it's a small enum
+arm in `src/profile.rs`.
 
 ### Example: `profiles/jx05.yaml`
 
@@ -85,7 +93,8 @@ setup and no relogin; a root-created uinput keyboard reaches the active X sessio
 
 | Profile | Device | Notes |
 |---|---|---|
-| jx05 | JX-05 BLE ring | 5-button D-pad; Jieli firmware fakes a touchpad. Full RE notes in `device-workshop/device-files/JX-05/skills.md`. **Use the CSR dongle, not the antenna-less Intel adapter.** |
+| jx05 | JX-05 BLE ring | 5-button D-pad; Jieli firmware fakes a touchpad (`gesture` translator). |
+| mocute | MOCUTE-032 BLE gamepad | Game mode: thumbstick reports as a hat (`axis`) + face buttons (`keymap`). |
 
 ## Roadmap
 

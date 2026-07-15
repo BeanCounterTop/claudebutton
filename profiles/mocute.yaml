@@ -1,0 +1,28 @@
+# MOCUTE-032 BLE gamepad, in game/joystick mode. The thumbstick reports as a
+# digital hat (ABS_HAT0X/Y = -1/0/1) — a clean d-pad — plus face buttons as
+# BTN_* key events. Two translators: `axis` for the stick, `keymap` for buttons.
+name: mocute
+
+match:
+  name_prefix: "MOCUTE"
+
+reconnect:
+  mac: "16:06:06:02:29:0C"
+  adapter: "00:1A:7D:DA:71:13"   # CSR dongle (same antenna'd adapter as the ring)
+
+translators:
+  # thumbstick-as-hat: center 0, any ±1 triggers. Flip a sign if a direction
+  # feels reversed (like the ring, orientation can mirror it).
+  - kind: axis
+    center: 0
+    threshold: 1
+    map:
+      ABS_HAT0Y-: KEY_UP       # stick up    -> history / scroll up
+      ABS_HAT0Y+: KEY_DOWN     # stick down  -> history / scroll down
+      ABS_HAT0X-: KEY_ESC      # stick left  -> interrupt
+      ABS_HAT0X+: KEY_RIGHT    # stick right -> accept autocomplete/ghost suggestion
+  # face buttons
+  - kind: keymap
+    map:
+      BTN_EAST: KEY_ENTER      # -> submit
+      BTN_WEST: KEY_ESC        # -> interrupt (alt)

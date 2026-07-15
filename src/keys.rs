@@ -78,9 +78,39 @@ pub fn code(name: &str) -> Option<u16> {
         "KEY_PREVIOUSSONG" => Key::KEY_PREVIOUSSONG,
         "KEY_STOPCD" => Key::KEY_STOPCD,
         "KEY_POWER" => Key::KEY_POWER,
+        // gamepad buttons (as an input side of a keymap translator)
+        "BTN_SOUTH" => Key::BTN_SOUTH,
+        "BTN_EAST" => Key::BTN_EAST,
+        "BTN_NORTH" => Key::BTN_NORTH,
+        "BTN_WEST" => Key::BTN_WEST,
+        "BTN_TL" => Key::BTN_TL,
+        "BTN_TR" => Key::BTN_TR,
+        "BTN_SELECT" => Key::BTN_SELECT,
+        "BTN_START" => Key::BTN_START,
+        "BTN_MODE" => Key::BTN_MODE,
+        "BTN_THUMBL" => Key::BTN_THUMBL,
+        "BTN_THUMBR" => Key::BTN_THUMBR,
         _ => return None,
     };
     Some(k.code())
+}
+
+/// Resolve an absolute-axis name ("ABS_HAT0Y") to its code, for the `axis`
+/// translator. Returns None for unknown names (fails at profile load).
+pub fn abs_code(name: &str) -> Option<u16> {
+    use evdev::AbsoluteAxisType as A;
+    let a = match name {
+        "ABS_X" => A::ABS_X,
+        "ABS_Y" => A::ABS_Y,
+        "ABS_Z" => A::ABS_Z,
+        "ABS_RX" => A::ABS_RX,
+        "ABS_RY" => A::ABS_RY,
+        "ABS_RZ" => A::ABS_RZ,
+        "ABS_HAT0X" => A::ABS_HAT0X,
+        "ABS_HAT0Y" => A::ABS_HAT0Y,
+        _ => return None,
+    };
+    Some(a.0)
 }
 
 #[cfg(test)]

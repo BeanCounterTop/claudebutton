@@ -140,9 +140,9 @@ fn run_daemon(profiles_dir: String) -> Result<()> {
     );
 
     let mut injector = Injector::new()?;
-    let mut translators: HashMap<String, Translator> = HashMap::new();
+    let mut translators: HashMap<String, Vec<Translator>> = HashMap::new();
     for p in &profiles {
-        translators.insert(p.name.clone(), p.translator.build()?);
+        translators.insert(p.name.clone(), p.build_translators()?);
     }
 
     let (tx, rx) = mpsc::channel::<Msg>();
@@ -187,10 +187,13 @@ fn run_daemon(profiles_dir: String) -> Result<()> {
 
         match rx.recv_timeout(Duration::from_millis(500)) {
             Ok(Msg::Event { profile, ev }) => {
-                if let Some(t) = translators.get_mut(&profile) {
-                    if let Some(code) = t.handle(&ev) {
-                        logln!("  {profile} -> {}", keys::name(code));
-                        let _ = injector.tap(code);
+                if let Some(ts) = translators.get_mut(&profile) {
+                    for t in ts.iter_mut() {
+                        if let Some(code) = t.handle(&ev) {
+                            logln!("  {profile} -> {}", keys::name(code));
+                            let _ = injector.tap(code);
+                            break;
+                        }
                     }
                 }
             }
