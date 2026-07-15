@@ -4,6 +4,10 @@ Repurpose weird HID devices into Claude control. Grab a cheap BLE remote / ring 
 dial, translate its events into keystrokes, and inject them into whatever window
 is focused — so you can drive a Claude Code session from a physical button.
 
+<p align="center">
+  <img src="assets/goodring.png" alt="The ClaudeButton ring — a 5-button D-pad ring with a touch strip" width="480">
+</p>
+
 ## How it works
 
 A single root daemon:
